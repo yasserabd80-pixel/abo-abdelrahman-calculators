@@ -19,7 +19,7 @@ if 'df' not in st.session_state:
         "Type": ["V", "R", "R", "R"],
         "Node1": [1, 1, 2, 0],
         "Node2": [0, 2, 0, 3],
-        "Value": [12.0, 1000.0, 2000.0, 3000.0],
+        "Value": ["12", "1000", "2000", "3000"],  # <<<<<<< تم التحويل إلى نصوص
         "Controlling": ["", "", "", ""],
         "Gain": [0.0, 0.0, 0.0, 0.0]
     }
@@ -185,8 +185,12 @@ with col1:
     st.subheader("📝 Circuit Netlist (Interactive Table)")
     st.caption("Use '0' for Ground. For Dependent Sources, fill 'Controlling' (Ref) and 'Gain'.")
     
+    # <<<<<<< التصحيح: نأخذ نسخة من البيانات ونتأكد أن عمود القيمة نصي >>>>>>>
+    df_to_edit = st.session_state.df.copy()
+    df_to_edit['Value'] = df_to_edit['Value'].astype(str)  # هذه هي الجملة السحرية التي تمنع الخطأ
+    
     edited_df = st.data_editor(
-        st.session_state.df,
+        df_to_edit,  # <<<<<<< نمرر النسخة المعدلة
         num_rows="dynamic",
         use_container_width=True,
         column_config={
@@ -197,7 +201,7 @@ with col1:
             ),
             "Node1": st.column_config.NumberColumn("Node +", step=1),
             "Node2": st.column_config.NumberColumn("Node -", step=1),
-            "Value": st.column_config.TextColumn("Value (e.g., 10k, 5m)"),
+            "Value": st.column_config.TextColumn("Value (e.g., 10k, 5m)"),  # عمود نصي
             "Controlling": st.column_config.TextColumn("Control Ref (e.g., R3)"),
             "Gain": st.column_config.NumberColumn("Gain (α, β, gm, rm)", step=0.1)
         }
